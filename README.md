@@ -1,47 +1,32 @@
 # Multiclass_Multilabel_Prediction_for_StackOverFlow
 
 
-Multiclass Multilabel Prediction For StackOverflow Questions
 Data set : https://www.kaggle.com/therajeshreddy/stackoverflow
 
 Objective : Given text for Questions from StackoverFlow posts, predict tags associated with them.
+This is a scaled down version of predecting only top 10 most occurring tags.
 
-This is a scaled down version of predecting only top 10 most occurring tags
-
-Programming Language : Python using nltk & Keras
+Programming Language : Python using nltk & Keras.
 
 Model Architecture : Deep Learning using Recurrent Neural Network (RNN)
 
-About Data Set
-
+About Data Set:
 Dataset has text of questions, answers and thier corresponding tags from the Stack Overflow programming Q&A website.
-
 This is organized as three files:
-
 Questions contains the title, body, creation date, closed date (if applicable), score, and owner ID for all non-deleted Stack Overflow questions.
-
 Tags contains the tags on each of these questions.
-
 Answers contains the body, creation date, score, and owner ID for each of the answers to these questions. The ParentId column links back to the Questions table. We don't use this file as we want to predict Tags given a question
 
 Data Pre-Processing
-
 Questions File Code : Stackoverflow Clean Questions.ipynb
 
 Read Questions File
 Drop All columns except Id,Title and Body
-Now the text in the Body column seem to have many html tags in the text. We use Regular Expressions and Clean the Body column text by removing the html tags
-import re 
-def rem_html_tags(body):
-    regex = re.compile('<.*?>')
-    return re.sub(regex, '', body)
-ques['Body'] = ques['Body'].apply(rem_html_tags)
-Save the questions file for later use
-ques.to_csv('question_clean.csv',index=False)
-Tags File Code : Stackoverflow Tags Map & Model.ipynb
+Now the text in the Body column seem to have many html tags in the text. We use Regular Expressions and Clean the Body column text by removing the html tags.
 
+Tags File Code : Stackoverflow Tags Map & Model.ipynb
 Read Tags File
-Identify top 10 Tags by count
+Identify top 10 Tags by count:
 tagCount =  collections.Counter(list(df_tags['Tag'])).most_common(10)
 print(tagCount)
 
@@ -49,12 +34,7 @@ print(tagCount)
 
 
 Manipulate the tags dataframe so that all the Tags for an ID are as a list in a row (grouped by Question ID)
-def add_tags(question_id):
-    return tag_top10[tag_top10['Id'] == question_id['Id']].Tag.values
-
-top10 = tag_top10.apply(add_tags, axis=1)
 Combine the Questions and Tags Code : Stackoverflow Tags Map & Model.ipynb
-
 Merge the Questions and Tags data frame by ID
 
 total=pd.merge(ques, top10_tags, on='Id')
@@ -63,7 +43,6 @@ Our Dataset would now have only Id, Title, Body & Tags
 Text Preprocessing Code : Stackoverflow Tags Map & Model.ipynb
 
 We will use nltk, preprocessing from Keras and sklearn to process the text data
-
 Tags preprocesing Use MultiLabelBinarizer from sklearn on the Class labels(Tags)
 
 from sklearn.preprocessing import MultiLabelBinarizer
@@ -119,19 +98,12 @@ The fully connected network has
 Model Compilattion with optimizer='adam', loss='categorical_crossentropy', metrics='accuracy')
 
 Model Performance Review
-
 Classification Report to check Precision, Recall and F1 Score
 
 The Model seem to performing good enough with score of 84%. Increase in the Embedding, GRU and dense layers would help in getting better results
 
-
-
 Random Validation on Test Data
-
-
-
 Save the Model & Weights
-
 Saving the model for transfer learning or model execution later
 
 model.save('./stackoverflow_tags.h5')
